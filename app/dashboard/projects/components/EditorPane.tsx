@@ -49,8 +49,8 @@ export default function EditorPane({
         width: isSplit ? `${dividerPosition}%` : "100%",
         transition: isDragging ? "none" : "width 0.2s ease",
       }}
-      className={`h-full resize-none border border-gray-300 dark:border-gray-700 rounded-md p-3 
-        outline-none bg-transparent text-base leading-relaxed font-light 
+      className={`h-full resize-none  border border-gray-300 dark:border-gray-700 rounded-md p-3 
+        outline-none bg-transparent text-2xl leading-relaxed font-light 
         text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 
         focus:ring-1 focus:ring-blue-400/40 dark:focus:ring-blue-600/40 transition-all ${
           readOnly ? "cursor-default select-none" : ""

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+// 1. Import 'useCallback' from react
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle,
@@ -15,6 +16,9 @@ import {
 } from "lucide-react";
 import ReviewAnalytics from "./ReviewAnalytics";
 
+// 2. Import your new Zustand store
+import { usePracticeStore } from "../../../store/usePracticeStore";
+
 interface Question {
   id: number;
   text: string;
@@ -22,7 +26,9 @@ interface Question {
 }
 
 export default function PracticeTestModule() {
+  // This state remains the source of truth for the text area
   const [inputText, setInputText] = useState("");
+  
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
@@ -33,25 +39,36 @@ export default function PracticeTestModule() {
   const [confidenceData, setConfidenceData] = useState<{ [key: number]: number }>({});
   const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(true);
 
+  // 3. Get the "mailbox" text and the "clear" action from the store
+  const textToStudy = usePracticeStore((state) => state.textToStudy);
+  const clearTextToStudy = usePracticeStore((state) => state.clearTextToStudy);
+
   const currentQuestion = questions[currentIndex];
   const total = questions.length;
 
   // Load previous accuracy
   const [previousAccuracy, setPreviousAccuracy] = useState<number | null>(null);
   useEffect(() => {
+    // Note: localStorage will not work in this environment, but leaving logic
     const stored = localStorage.getItem("practice_accuracy");
     if (stored) setPreviousAccuracy(parseFloat(stored));
   }, []);
 
-  // Generate questions
-  const handleGenerateQuestions = async () => {
-    if (!inputText.trim()) return;
+  // 4. Update handleGenerateQuestions to accept optional text
+  // We wrap it in 'useCallback' so the 'useEffect' hook can use it safely
+  const handleGenerateQuestions = useCallback(async (textToUse?: string) => {
+    // If textToUse is provided (from "Study" button), use it.
+    // Otherwise, use the text from the state (from manual typing).
+    const text = textToUse || inputText;
+    if (!text.trim()) return;
+    
     setIsGenerating(true);
     try {
       const res = await fetch("/dashboard/projects/api/generate-questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: inputText }),
+        // Use the determined 'text' variable here
+        body: JSON.stringify({ text: text }),
       });
       const data = await res.json();
       setQuestions(data.questions || []);
@@ -64,13 +81,31 @@ export default function PracticeTestModule() {
     } finally {
       setIsGenerating(false);
     }
-  };
+  }, [inputText]); // It only needs 'inputText' as a dependency
+
+  // 5. This is the new "listener" hook
+  useEffect(() => {
+    // Check if the "Study" button sent us new text
+    if (textToStudy) {
+      console.log("PracticeTestModule: Received new text to study!");
+      
+      // A. Put the new text into the text area
+      setInputText(textToStudy);
+      
+      // B. Automatically call the generate function, passing the text directly
+      handleGenerateQuestions(textToStudy);
+      
+      // C. CRITICAL: Clear the "mailbox" so this doesn't run again.
+      clearTextToStudy();
+    }
+    // This effect runs *only* when textToStudy changes
+  }, [textToStudy, clearTextToStudy, handleGenerateQuestions]);
 
   // Cancel test
   const handleCancel = () => {
     setIsGenerating(false);
     setQuestions([]);
-    setInputText("");
+    setInputText(""); // Also clear the text area
     setIsAnswered(false);
     setCorrectCount(0);
     setIncorrectCount(0);
@@ -154,6 +189,12 @@ export default function PracticeTestModule() {
             <p className="text-slate-700 dark:text-slate-300 mb-4 text-lg font-medium text-center">
               Paste your notes and generate smart fill-in-the-blank questions
             </p>
+            {/* 6. NO CHANGE NEEDED HERE. 
+              This <textarea> is still bound to 'inputText'.
+              When the 'useEffect' calls 'setInputText(textToStudy)', 
+              this UI will update automatically. 
+              The 'onChange' still allows manual typing.
+            */}
             <textarea
               rows={6}
               placeholder="e.g. Newton’s first law states that..."
@@ -162,10 +203,15 @@ export default function PracticeTestModule() {
               onChange={(e) => setInputText(e.target.value)}
             />
             <div className="flex justify-center gap-3">
+              {/* 7. NO CHANGE NEEDED HERE.
+                This button *correctly* calls 'handleGenerateQuestions' with NO argument.
+                This means it will use the 'inputText' from the state,
+                perfectly preserving your manual-entry feature.
+              */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleGenerateQuestions}
+                onClick={() => handleGenerateQuestions()}
                 disabled={!inputText.trim()}
                 className="flex items-center gap-2 px-5 py-3 rounded-full text-white font-medium shadow-md bg-gradient-to-r from-indigo-600 to-blue-600 hover:shadow-lg transition-all disabled:opacity-50"
               >
@@ -183,7 +229,7 @@ export default function PracticeTestModule() {
           </p>
         )}
 
-        {/* Test in progress */}
+        {/* Test in progress (No changes needed below) */}
         {questions.length > 0 && currentQuestion && (
           <div className="mt-4 text-center">
             <p className="text-lg py-8  md:text-xl text-slate-900 dark:text-slate-100 font-medium mb-6">

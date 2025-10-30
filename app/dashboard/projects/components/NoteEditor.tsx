@@ -8,11 +8,18 @@ import {
   Columns,
   Maximize2,
   Minimize2,
+  BookOpen, // 1. Import a new icon for the "Study" button
 } from "lucide-react";
 import EditorPane from "./EditorPane";
 import PreviewPane from "./preview/PreviewPane";
 import SplitDivider from "./SplitDivider";
-import { MODULES } from "./preview/modules"; // dynamic imports
+import { MODULES } from "./preview/modules";
+import { PdfUploadButton } from "./PdfUploadButton";
+
+// 2. Import your two Zustand stores
+import { useTabsStore } from "../store/useTabsStore";
+import { usePracticeStore } from "../store/usePracticeStore";
+import { Button } from "@/components/ui/button"; // 3. Import the base Button
 
 interface Note {
   id: number;
@@ -35,8 +42,11 @@ export default function NoteEditor({ note, onUpdate }: NoteEditorProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [activeModule, setActiveModule] = useState("Flashcard");
 
-
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // 4. Get the actions from your Zustand stores
+  const setActiveTab = useTabsStore((state) => state.setActiveIndex);
+  const setTextToStudy = usePracticeStore((state) => state.setTextToStudy);
 
   // 💾 Auto-save with debounce
   useEffect(() => {
@@ -48,7 +58,7 @@ export default function NoteEditor({ note, onUpdate }: NoteEditorProps) {
       }
     }, 700);
     return () => clearTimeout(timeout);
-  }, [title, content, note]);
+  }, [title, content, note, onUpdate]);
 
   // Sync when switching notes
   useEffect(() => {
@@ -90,12 +100,31 @@ export default function NoteEditor({ note, onUpdate }: NoteEditorProps) {
     };
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
+  const handleTextFromAI = (aiText: string) => {
+    if (content.trim() === "") {
+      setContent(aiText);
+    } else {
+      const separator = "\n\n\n\n\n-------------------------------------------\n\n";
+      setContent((currentContent) => currentContent + separator + aiText);
+    }
+  };
+
+  // 5. This is the new handler for your "Study" button
+  const handleStudyClick = () => {
+    // A. Send the current note's content to the "mailbox"
+    setTextToStudy(content);
+    
+    // B. Switch the "yellow box" view to the "Practice Tests" tab
+    // (Assuming "Practice Tests" is the 2nd tab, at index 1)
+    setActiveTab(1);
+  };
+
   const ActiveModuleComponent = MODULES[activeModule as keyof typeof MODULES];
 
   return (
     <div className="relative flex flex-col h-full font-logo text-gray-800 dark:text-gray-100">
       {/* 🧭 Header */}
-      <header className="flex items-center justify-between border-b border-gray-300 dark:border-gray-700 pb-2 mb-4">
+      <header className="flex items-center justify-between border-b border-gray-300 dark:border-gray-700 pb-2">
         <div className="flex items-center gap-2 w-full">
           <Edit3 size={18} className="text-gray-500 dark:text-gray-400" />
           <input
@@ -130,8 +159,23 @@ export default function NoteEditor({ note, onUpdate }: NoteEditorProps) {
         </div>
       </header>
 
+      {/* --- Action Bar --- */}
+      <div className="flex items-center gap-2 py-2 border-b border-gray-300 dark:border-gray-700">
+        <PdfUploadButton onTextOrganized={handleTextFromAI} />
+        
+        {/* --- 6. This is your new "Study" button --- */}
+        <Button
+          onClick={handleStudyClick}
+          variant="outline" // Styled just like the Upload button
+          size="sm"
+        >
+          <BookOpen className="mr-2 h-4 w-4" />
+          Study
+        </Button>
+      </div>
+
       {/* 🧱 Main Layout */}
-      <section ref={containerRef} className="flex-1 flex flex-col overflow-hidden">
+      <section ref={containerRef} className="flex-1 flex flex-col overflow-hidden pt-4">
         <div className={`flex-1 flex ${isSplit ? "flex-row" : "flex-col"}`}>
           {!isPreviewExpanded && (
             <EditorPane
@@ -155,11 +199,9 @@ export default function NoteEditor({ note, onUpdate }: NoteEditorProps) {
               setActiveModule={setActiveModule}
             />
           )}
-
-
-          
         </div>
       </section>
     </div>
   );
 }
+
