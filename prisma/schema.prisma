@@ -1,0 +1,91 @@
+//
+// ─── Prisma Schema for NeoShark Flashcards App ───────────────────────────────
+// Integrates NextAuth (Google) + Flashcards feature
+//
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // You can switch to "postgresql" later for production
+  url      = env("DATABASE_URL")
+}
+
+//
+// ─── User Authentication Models (NextAuth) ───────────────────────────────────
+// These are standard models for NextAuth authentication.
+//
+
+model User {
+  id             String       @id @default(cuid())
+  name           String?
+  email          String?      @unique
+  emailVerified  DateTime?
+  image          String?
+
+  // Relations
+  accounts       Account[]
+  sessions       Session[]
+  flashcards     Flashcard[]  @relation("UserFlashcards")
+
+  @@index([email])
+}
+
+model Account {
+  id                String   @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+//
+// ─── Flashcards ─────────────────────────────────────────────────────────────
+// Connected to each authenticated user
+// Supports cascade delete & timestamps
+//
+
+model Flashcard {
+  id        Int      @id @default(autoincrement())
+  front     String
+  back      String
+  userId    String
+  user      User     @relation("UserFlashcards", fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("flashcards")
+}

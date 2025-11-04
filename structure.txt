@@ -1,0 +1,185 @@
+.
+├── app
+│   ├── (auth)
+│   │   ├── login
+│   │   │   └── page.tsx
+│   │   └── signin
+│   │       └── page.tsx
+│   ├── @modal
+│   │   └── (.)cmd
+│   │       └── page.tsx
+│   ├── About
+│   │   └── page.tsx
+│   ├── api
+│   │   ├── auth
+│   │   │   └── [...nextauth]
+│   │   │       └── route.ts
+│   │   ├── chat
+│   │   │   └── route.ts
+│   │   └── flashcards
+│   │       ├── [id]
+│   │       │   └── route.ts
+│   │       └── route.ts
+│   ├── components
+│   │   ├── AboutSection.tsx
+│   │   ├── cards.tsx
+│   │   ├── command-modal.tsx
+│   │   ├── DashboardGrid.tsx
+│   │   ├── DashboardHeader.tsx
+│   │   ├── DashboardSidebar.tsx
+│   │   ├── FeatureSection.tsx
+│   │   ├── Footer.tsx
+│   │   ├── Header.tsx
+│   │   ├── InputForm.tsx
+│   │   ├── LayoutWrapper.tsx
+│   │   ├── Navbar.tsx
+│   │   ├── NeosharkBackground.tsx
+│   │   ├── rightnav.tsx
+│   │   ├── Slide.tsx
+│   │   └── tabs
+│   │       ├── ContentTab.tsx
+│   │       ├── DesignTab.tsx
+│   │       ├── MediaTab.tsx
+│   │       ├── OverviewTab.tsx
+│   │       ├── ReviewTab.tsx
+│   │       ├── SlideBuilder.tsx
+│   │       └── TabNavigation.tsx
+│   ├── dashboard
+│   │   ├── FlashcardAnalytics.tsx
+│   │   ├── flashcards
+│   │   │   ├── [id]
+│   │   │   │   ├── edit
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── route.ts
+│   │   │   ├── new
+│   │   │   │   └── page.tsx
+│   │   │   └── page.tsx
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── projects
+│   │   │   ├── api
+│   │   │   │   ├── chat
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── generate-questions
+│   │   │   │       └── route.ts
+│   │   │   ├── components
+│   │   │   │   ├── ActivityBar.tsx
+│   │   │   │   ├── BottomTerminal.tsx
+│   │   │   │   ├── chatbot
+│   │   │   │   │   ├── Chat.tsx
+│   │   │   │   │   ├── InputBar.tsx
+│   │   │   │   │   └── RightSidebar.tsx
+│   │   │   │   ├── EditorPane.tsx
+│   │   │   │   ├── FocusModeButton.tsx
+│   │   │   │   ├── HeaderBar.tsx
+│   │   │   │   ├── NoteEditor.tsx
+│   │   │   │   ├── notetabs.tsx
+│   │   │   │   ├── preview
+│   │   │   │   │   ├── flashcard
+│   │   │   │   │   │   ├── FlashcardModule.tsx
+│   │   │   │   │   │   └── PracticeText.tsx
+│   │   │   │   │   ├── modules.ts
+│   │   │   │   │   ├── multipleChoice
+│   │   │   │   │   │   ├── MultipleChoiceModule.tsx
+│   │   │   │   │   │   └── multiplePart.tsx
+│   │   │   │   │   ├── practiceTests
+│   │   │   │   │   │   ├── PracticeTestModule.tsx
+│   │   │   │   │   │   └── ReviewAnalytics.tsx
+│   │   │   │   │   └── PreviewPane.tsx
+│   │   │   │   ├── ProgressEditor.tsx
+│   │   │   │   ├── Sidebar.tsx
+│   │   │   │   └── SplitDivider.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── store
+│   │   │       └── useTabsStore.ts
+│   │   └── settings
+│   │       └── page.tsx
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── providers.tsx
+│   ├── trial
+│   │   └── page.tsx
+│   └── try
+│       ├── layout.tsx
+│       └── page.tsx
+├── components
+│   └── ui
+│       ├── button.tsx
+│       ├── card.tsx
+│       ├── command.tsx
+│       ├── dialog.tsx
+│       └── input.tsx
+├── components.json
+├── eslint.config.mjs
+├── lib
+│   ├── generated
+│   │   └── prisma
+│   │       ├── client.d.ts
+│   │       ├── client.js
+│   │       ├── default.d.ts
+│   │       ├── default.js
+│   │       ├── edge.d.ts
+│   │       ├── edge.js
+│   │       ├── index-browser.js
+│   │       ├── index.d.ts
+│   │       ├── index.js
+│   │       ├── libquery_engine-darwin-arm64.dylib.node
+│   │       ├── package.json
+│   │       ├── query_engine_bg.js
+│   │       ├── query_engine_bg.wasm
+│   │       ├── runtime
+│   │       │   ├── edge-esm.js
+│   │       │   ├── edge.js
+│   │       │   ├── index-browser.d.ts
+│   │       │   ├── index-browser.js
+│   │       │   ├── library.d.ts
+│   │       │   ├── library.js
+│   │       │   ├── react-native.js
+│   │       │   ├── wasm-compiler-edge.js
+│   │       │   └── wasm-engine-edge.js
+│   │       ├── schema.prisma
+│   │       ├── wasm-edge-light-loader.mjs
+│   │       ├── wasm-worker-loader.mjs
+│   │       ├── wasm.d.ts
+│   │       └── wasm.js
+│   ├── prisma.ts
+│   ├── slideGenerator.ts
+│   ├── store.ts
+│   └── utils.ts
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.ts
+├── package-lock.json
+├── package.json
+├── postcss.config.mjs
+├── prisma
+│   ├── dev.db
+│   ├── migrations
+│   │   ├── 20251013180116_init
+│   │   │   └── migration.sql
+│   │   ├── 20251013201009_add_user_relation
+│   │   │   └── migration.sql
+│   │   ├── 20251013211208_fix_sqlite_text_types
+│   │   │   └── migration.sql
+│   │   └── migration_lock.toml
+│   └── schema.prisma
+├── public
+│   ├── file.svg
+│   ├── globe.svg
+│   ├── google_icon.png
+│   ├── Googlelogo.png
+│   ├── neoshark_no_bg.png
+│   ├── next.svg
+│   ├── Shark.png
+│   ├── vercel.svg
+│   └── window.svg
+├── README.md
+├── slidecreation
+├── structure.txt
+├── text.txt
+├── text.txt.zip
+└── tsconfig.json
+
+48 directories, 135 files

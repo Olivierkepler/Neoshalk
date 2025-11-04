@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/lib/generated/prisma
+slidecreation.zip
+text.txt
+text.txt.zip
+.env.local
